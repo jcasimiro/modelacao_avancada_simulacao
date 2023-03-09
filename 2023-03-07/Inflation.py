@@ -11,7 +11,7 @@ def k(x):
 list = []
 i = 0
 
-with open('FPCPITOTLZGUSA.csv', newline='') as csvfile:
+with open('2023-03-07/FPCPITOTLZGUSA.csv', newline='') as csvfile:
     inflation_reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
     for row in inflation_reader:
         if (i > 0 ):
