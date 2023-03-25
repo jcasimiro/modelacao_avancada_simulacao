@@ -172,7 +172,7 @@ def credit_simulation(Tx):
 
 def main():
     #read the file
-    inflation_list = read_inflation_rate("FPCPITOTLZGUSA.csv")
+    inflation_list = read_inflation_rate("2023-03-18/FPCPITOTLZGUSA.csv")
     out = calculate_density_estimation(inflation_list, 10)
 
     #plt.fill(inflation_list, out, color=(.3,.3,.3,.3))
