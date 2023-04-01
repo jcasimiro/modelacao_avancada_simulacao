@@ -163,7 +163,7 @@ def tax_simulation(inflation_list_array, yy01, xx01, hh01):
 
     return mean, intervals
 
-def credit_simulation(Tx):
+def credit_simulation(Tx, intervals_collection):
     if len(Tx) != 30:
         return None
 
@@ -178,6 +178,8 @@ def credit_simulation(Tx):
     anos_em_falta=np.zeros(prazo)
     coltab = []    
 
+    interval = intervals_collection[0]
+
     # ano zero dp emprestimo
     divida[0]=valor_emprestimo
     anos_em_falta[0]=prazo
@@ -187,6 +189,8 @@ def credit_simulation(Tx):
     amortizacao[0]=prestacao_anual[0]-juro_capital_em_divida[0]
 
     coltab.append([Tx[0]/100, divida[0], juro_total[0],prestacao_anual[0],juro_capital_em_divida[0],amortizacao[0]])
+    for i in range(nr_intervals):
+        coltab[0].append(interval[i+1].prob)
 
     for i in range(1,prazo):
         anos_em_falta[i]=anos_em_falta[i-1]-1
@@ -196,9 +200,16 @@ def credit_simulation(Tx):
         juro_capital_em_divida[i]=juro_total[i]*divida[i]
         amortizacao[i]=prestacao_anual[i]-juro_capital_em_divida[i]
         coltab.append([Tx[i]/100, divida[i], juro_total[i],prestacao_anual[i],juro_capital_em_divida[i],amortizacao[i]])
+        interval_1 = intervals_collection[i]
+        for j in range(nr_intervals):
+            coltab[i].append(interval_1[j+1].prob)
         
     # Criação do DataFrame - tabela
     colunas = ['Juro Simulado', 'Dívida', 'Juro Total', 'Prestação Anual', 'Juro Capital em Divida','Amortização']
+    for i in range(nr_intervals):
+        column = "(" + str(i+1) + ") [" + str(round(interval[i+1].min,2)) + "," + str(round(interval[i+1].max,2)) + "]"
+        colunas.append(column)
+
     tabela = pd.DataFrame(coltab, columns=colunas)
 
     print(tabela)
@@ -236,20 +247,7 @@ def main():
         taxas_simulacao.append(mean)
         intervals_collection.append(intervals)
 
-    credit_simulation(taxas_simulacao)
-
-    #calculate the average prob by group
-    intervals_mean = [nr_intervals]
-    for j in range(nr_intervals):
-         intervals_mean.append(0.0)
-    for i in range(0, 30):
-            for j in range(nr_intervals):
-                intervals_mean[j+1] += intervals_collection[i][j+1].prob
-    for j in range(nr_intervals):           
-        intervals_mean[j+1] = intervals_mean[j+1] / 30
-    #show the average prob by group
-    for j in range(1, nr_intervals+1): 
-        print(intervals_mean[j])
+    credit_simulation(taxas_simulacao, intervals_collection)
 
 if __name__ == "__main__":
     main()
