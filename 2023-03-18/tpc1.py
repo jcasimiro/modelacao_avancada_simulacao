@@ -190,7 +190,7 @@ def main():
 
     # this must produce exactly the same result as yy01
     yy02 = np.array(list(map(lambda x : MeanKdParabolicFunc(inflation_list_array,hh01,x) , xx01)))
-
+    
     #plt.fill(xx01,yy01,color=(.3,.3,.3,.3))
     #plt.plot(xx01 , yy01,linewidth=2,color='k')
     #plt.grid(True)
