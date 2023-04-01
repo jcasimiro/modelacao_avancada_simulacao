@@ -6,21 +6,6 @@ import matplotlib.pyplot as plt
 import statistics as stats
 
 debug = False
-nr_intervals = 4
-
-class interval:
-    def __init__(self, min, max):
-        self.min = min
-        self.max = max
-        self.count = 0
-        self.prob = 0.0
-    
-    def increment(self, value):
-        if value >= self.min and value <= self.max:
-            self.count += 1
-    
-    def set_prob(self, value):
-        self.prob = value
 
 #read csv file with inflation values
 def read_inflation_rate(filename):
@@ -119,16 +104,6 @@ def tax_simulation(inflation_list_array, yy01, xx01, hh01):
     # the interval in which we generate random deviates
     xmin = np.min(xx01)
     xmax = np.max(xx01)
-    interval_size = (xmax - xmin) / nr_intervals
-
-    intervals = [nr_intervals]
-    interval_min = xmin
-    interval_max = interval_min + interval_size
-    for k in range(nr_intervals):
-        instance = interval(interval_min, interval_max)
-        intervals.append(instance)
-        interval_min = interval_min + interval_size
-        interval_max = interval_min + interval_size      
 
     # where everythong is stored
     rlista = []
@@ -142,26 +117,18 @@ def tax_simulation(inflation_list_array, yy01, xx01, hh01):
         if (ty < MeanKdParabolicFunc(inflation_list_array,hh01,tx)):
             rlista.append(tx)
             count += 1
-            # put the value inside correct interval
-            for i in range(nr_intervals):
-                intervals[i+1].increment(tx)
-
-    # calculate interval probability
-    for i in range(nr_intervals):
-        intervals[i+1].set_prob(intervals[i+1].count / ndeviates)
-
+            
     ratio = (ndeviates + 0.)/generated
     mean = stats.mean(rlista)
 
-    if debug:
-        print("The acceptance ratio was %f" %ratio)
-        print("Mean value: %f" %mean)
+    #print("The acceptance ratio was %f" %ratio)
+    #print("Mean value: %f" %mean)
 
     #plt.hist(rlista , density = True , bins = 50 , rwidth = .8 , color = (.3,.4,.6,.3))
     #plt.plot(xx01,yy01,linewidth=2,color=(0. , 0 , 0 , .8))
     #plt.show()
 
-    return mean, intervals
+    return mean
 
 def credit_simulation(Tx):
     if len(Tx) != 30:
@@ -224,32 +191,16 @@ def main():
     # this must produce exactly the same result as yy01
     yy02 = np.array(list(map(lambda x : MeanKdParabolicFunc(inflation_list_array,hh01,x) , xx01)))
     
-    #plt.fill(xx01,yy01,color=(.3,.3,.3,.3))
-    #plt.plot(xx01 , yy01,linewidth=2,color='k')
-    #plt.grid(True)
-    #plt.show()
+    plt.fill(xx01,yy01,color=(.3,.3,.3,.3))
+    plt.plot(xx01 , yy01,linewidth=2,color='k')
+    plt.grid(True)
+    plt.show()
 
     taxas_simulacao = []
-    intervals_collection = []
     for i in range(0, 30):
-        mean, intervals = tax_simulation(inflation_list_array, yy01, xx01, hh01)
-        taxas_simulacao.append(mean)
-        intervals_collection.append(intervals)
+        taxas_simulacao.append(tax_simulation(inflation_list_array, yy01, xx01, hh01))
 
     credit_simulation(taxas_simulacao)
-
-    #calculate the average prob by group
-    intervals_mean = [nr_intervals]
-    for j in range(nr_intervals):
-         intervals_mean.append(0.0)
-    for i in range(0, 30):
-            for j in range(nr_intervals):
-                intervals_mean[j+1] += intervals_collection[i][j+1].prob
-    for j in range(nr_intervals):           
-        intervals_mean[j+1] = intervals_mean[j+1] / 30
-    #show the average prob by group
-    for j in range(1, nr_intervals+1): 
-        print(intervals_mean[j])
 
 if __name__ == "__main__":
     main()
