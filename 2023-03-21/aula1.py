@@ -17,6 +17,6 @@ for i in range(nr_simulacoes):
     if caixa == 0:
         contar_ruina += 1
 
-print("caixa: %f" %caixa)
-print("jogadas: %i" %contar_jogadas)
-print("probabilidade: %f" %(contar_ruina/nr_simulacoes))
+print(f"caixa: %f" %caixa)
+print(f"jogadas: %i" %contar_jogadas)
+print(f"probabilidade: %f" %(contar_ruina/nr_simulacoes))
