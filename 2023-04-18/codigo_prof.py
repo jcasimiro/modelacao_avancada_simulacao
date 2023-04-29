@@ -30,4 +30,3 @@ for i in range(npts):
 
 for i in range(npts):
     print((xrand[i],yrand[i]))
-
